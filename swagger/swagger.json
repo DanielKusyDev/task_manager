@@ -1,0 +1,314 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "description": "This is API for EMBIQ recruitment task.",
+    "version": "1.0",
+    "title": "Task manager"
+  },
+  "host": "127.0.0.1:5000",
+  "tags": [
+    {
+      "name": "users"
+    },
+    {
+      "name": "tasks"
+    }
+  ],
+  "schemes": [
+    "http",
+    "https"
+  ],
+  "paths": {
+    "/users": {
+      "post": {
+        "tags": [
+          "users"
+        ],
+        "summary": "Register user",
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/User"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Success"
+          },
+          "400": {
+            "description": "Invalid input"
+          }
+        }
+      }
+    },
+    "/login": {
+      "post": {
+        "tags": [
+          "users"
+        ],
+        "summary": "Log in",
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/User"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          },
+          "400": {
+            "description": "Invalid input"
+          }
+        }
+      }
+    },
+    "/users/webhook": {
+      "post": {
+        "tags": [
+          "users"
+        ],
+        "summary": "Set slack webhook URL",
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/SlackWebhook"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          },
+          "400": {
+            "description": "Invalid input"
+          }
+        }
+      }
+    },
+    "/tasks": {
+      "post": {
+        "tags": [
+          "tasks"
+        ],
+        "summary": "Create new task",
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/Task"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Success"
+          },
+          "400": {
+            "description": "Invalid input"
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "tasks"
+        ],
+        "summary": "Get paginated list of tasks",
+        "parameters": [
+          {
+            "in": "query",
+            "type": "integer",
+            "name": "page"
+          },
+          {
+            "in": "query",
+            "type": "integer",
+            "name": "page_size"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of tasks"
+          },
+          "400": {
+            "description": "Error"
+          }
+        }
+      }
+    },
+    "/tasks/{task_id}": {
+      "get": {
+        "tags": [
+          "tasks"
+        ],
+        "summary": "Update task",
+        "parameters": [
+          {
+            "in": "path",
+            "type": "string",
+            "name": "task_id",
+            "required": true
+          },
+          {
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/SlackWebhook"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Task details"
+          },
+          "400": {
+            "description": "Invalid input"
+          },
+          "404": {
+            "description": "Not found"
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "tasks"
+        ],
+        "summary": "Update task",
+        "parameters": [
+          {
+            "name": "task_id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/Task"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          },
+          "400": {
+            "description": "Invalid input"
+          },
+          "404": {
+            "description": "Not found"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "tasks"
+        ],
+        "summary": "Delete task",
+        "parameters": [
+          {
+            "name": "task_id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          },
+          "404": {
+            "description": "Not found"
+          }
+        }
+      }
+    },
+    "/tasks/reports": {
+      "get": {
+        "tags": [
+          "tasks"
+        ],
+        "summary": "Generate reports",
+        "parameters": [
+          {
+            "in": "query",
+            "type": "string",
+            "name": "period",
+            "required": true,
+            "default": "week",
+            "description": "week / month / year"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Task details"
+          },
+          "400": {
+            "description": "Invalid input"
+          }
+        }
+      }
+    }
+  },
+  "definitions": {
+    "User": {
+      "type": "object",
+      "properties": {
+        "email": {
+          "type": "string",
+          "format": "email"
+        },
+        "password": {
+          "type": "string"
+        }
+      }
+    },
+    "SlackWebhook": {
+      "type": "object",
+      "properties": {
+        "slack_webhook_url": {
+          "type": "string",
+          "format": "string"
+        }
+      }
+    },
+    "Task": {
+      "type": "object",
+      "properties": {
+        "description": {
+          "type": "string",
+          "example": "Task #1"
+        },
+        "end_date": {
+          "type": "string",
+          "format": "%Y-%m-%d %H:%M:%S",
+          "example": "2020-01-01 10:10:10"
+        },
+        "done": {
+          "type": "boolean",
+          "example": false
+        }
+      }
+    }
+  },
+  "externalDocs": {
+    "description": "Find out more about Swagger",
+    "url": "http://swagger.io"
+  }
+}

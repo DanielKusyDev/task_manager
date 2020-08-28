@@ -1,0 +1,47 @@
+version: "3.5"
+
+services:
+  app:
+    build: .
+    command: "python -u run.py"
+    ports:
+      - "${APP_HOST_PORT}:5000"
+    volumes:
+      - "./:/app"
+    networks:
+      - "backend"
+    depends_on:
+      - "db"
+  db:
+    image: "mongo"
+    ports:
+      - "${DB_HOST_PORT}:27017"
+    volumes:
+      - "./db/:/data/db"
+    networks:
+      - "backend"
+
+  rabbit:
+    image: "rabbitmq:3.6.1"
+    environment:
+      - RABBITMQ_DEFAULT_USER=${RABBITMQ_DEFAULT_USER}
+      - RABBITMQ_DEFAULT_PASS=${RABBITMQ_DEFAULT_PASS}
+    ports:
+      - "${RABBITMQ_HOST_PORT}:5672"
+      - "${RABBITMQ_MANAGEMENT_PORT}:15672"
+    networks:
+      - "backend"
+  worker:
+    build: .
+    command: "celery worker -B -A task_manager.celery_worker.celery --loglevel=DEBUG"
+    depends_on:
+      - "rabbit"
+      - "app"
+    restart: "always"
+    volumes:
+      - "./:/app"
+    networks:
+      - "backend"
+
+networks:
+  backend:
